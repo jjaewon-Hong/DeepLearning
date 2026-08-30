@@ -43,11 +43,7 @@
 - diffusion으로 해결됨 ⇒ 그런데 느림 (스텝 수십~수백 번)
     - 로봇은 실시간 제어 (스텝 수 = 지연 시간)
     - 적은 스텝으로 같은 품질을 내는 flow matching으로 이동
-
-> ⚠️ **"diffusion = 무조건 느림"으로 굳히지 말 것**
-> DDIM, DPM-Solver 같은 샘플러로 10~50 스텝, distillation까지 가면 1~4 스텝도 나옴.
-> 로봇에서 flow matching을 택하는 이유 자체는 유효하지만,
-> 논문에서 few-step diffusion을 만났을 때 어긋나지 않도록 알아둘 것
+    - 다만 "diffusion = 무조건 느림"으로 굳혀서는 안 됨. DDIM, DPM-Solver 같은 샘플러를 쓰면 10~50 스텝, distillation까지 가면 1~4 스텝도 가능함. 로봇에서 flow matching을 택하는 이유 자체는 여전히 유효하지만, 논문에서 few-step diffusion을 만났을 때 헷갈리지 않으려면 이 점을 알아둬야 함
 
 ---
 
@@ -65,12 +61,7 @@
 - 예측 대상이 노이즈만 있는 건 아님 (parameterization)
     - `ε-prediction` : 낀 노이즈를 예측 (가장 일반적)
     - `x0-prediction` : 원본 데이터를 바로 예측
-    - `v-prediction` : 둘을 섞은 형태
-
-> ⚠️ **`v-prediction`의 v ≠ flow matching의 velocity**
-> 이름이 같아서 헷갈리지만 정의가 다름.
-> diffusion의 v는 노이즈와 데이터를 섞은 예측 타깃이고,
-> flow matching의 velocity는 확률 경로 위에서의 이동 방향-크기임
+    - `v-prediction` : 둘을 섞은 형태 — 이름이 같아서 헷갈리지만 flow matching의 velocity와는 다른 개념임. diffusion의 v는 노이즈와 데이터를 섞은 예측 타깃이고, flow matching의 velocity는 확률 경로 위에서의 이동 방향-크기임
 
 ---
 
@@ -94,12 +85,7 @@
 - **생성** : 노이즈에서 출발해 예측한 방향으로 몇 걸음 (Euler)
     - 조건부 경로가 직선이라 회귀 대상이 단순함 (diffusion의 곡선 경로 대비)
     - 걸음 수가 적어도 됨 ⇒ 빠른 이유
-
-> ⚠️ **직선인 건 "조건부 경로"이지 실제 샘플링 궤적이 아님**
-> 노이즈 하나 ↔ 데이터 하나를 이은 선은 직선이 맞음.
-> 하지만 샘플링에서 실제로 따라가는 건 학습된 **주변 속도장**이고, 이 궤적은 휘어짐.
-> Rectified Flow의 **reflow**가 이 궤적을 펴는 절차임
-> ⇒ 펴는 절차가 따로 필요하다는 게, 원래는 곧지 않다는 뜻
+    - 단, 직선인 건 어디까지나 노이즈 하나와 데이터 하나를 이은 **조건부 경로**일 뿐, 실제 샘플링 궤적은 아님. 샘플링에서 실제로 따라가는 건 학습된 **주변 속도장**이고, 이 궤적은 휘어짐. Rectified Flow의 **reflow**가 바로 이 궤적을 펴는 절차이며, 펴는 절차가 따로 필요하다는 것 자체가 원래는 곧지 않다는 뜻임
 
 ---
 
@@ -130,7 +116,4 @@
 - 이 구조를 쓰는 대표 모델
     - **π0** : VLM 백본 + flow matching action head
     - **SUREFlow** (IROS'26) : Mamba 기반 경량(179M) 백본 + residual flow matching head
-
-> 💡 제목만으로 파싱하기
-> *State-space* (= Mamba 백본) + *Uncertainty-aware* + *REsidual **Flow Matching*** (= action head)
-> ⇒ 백본과 head를 각각 무엇으로 골랐는지가 제목에 그대로 들어있음
+    - 제목만 봐도 구조가 파싱됨 : *State-space* (= Mamba 백본) + *Uncertainty-aware* + *REsidual **Flow Matching*** (= action head) ⇒ 백본과 head를 각각 무엇으로 골랐는지가 제목에 그대로 들어있음
