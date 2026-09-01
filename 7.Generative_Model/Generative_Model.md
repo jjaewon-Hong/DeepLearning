@@ -21,6 +21,8 @@
 
 ![image_1](./image_set/image_1.png)
 
+> 출처: Lilian Weng, [What are Diffusion Models?](https://lilianweng.github.io/posts/2021-07-11-diffusion-models/) (2021)
+
 - 위 그림은 표의 네 계열을 구조도로 나란히 놓은 것임
     - GAN은 판별자가 따로 붙어있고, VAE는 인코더-디코더로 `z`를 거치며, Flow는 가역 변환과 역변환이 쌍을 이룸
     - Diffusion만 여러 스텝을 오가는 체인 형태임 ⇒ 스텝 수가 곧 생성 비용이 되는 이유
@@ -49,6 +51,8 @@
 
 ![image_2](./image_set/image_2.png)
 
+> 출처: Chi et al., [Diffusion Policy: Visuomotor Policy Learning via Action Diffusion](https://arxiv.org/abs/2303.04137) (RSS 2023), Fig. 2
+
 - 검은 곡선이 정답 액션의 집합임 (한 관측에 정답이 여러 개인 상황)
 - **(a) 단순 회귀** : 액션 하나만 뱉음 ⇒ 여러 정답의 평균으로 뭉개짐
 - **(c) diffusion policy** : gradient field를 따라가며 여러 mode 중 하나로 수렴함
@@ -68,15 +72,11 @@
 
 - **reverse** : 신경망이 "지금 이 데이터에 낀 노이즈가 뭐냐"를 예측
     - 학습 = 노이즈 예측 회귀 (단순 MSE)
+    - forward와 달리 정해진 규칙으로 못 쓰는 이유 : 진짜 역방향 분포 `q(x_{t-1}|x_t)`는 데이터 분포 전체를 알아야 계산되므로 알 수 없음
+    - 그래서 이것만 신경망 `p_θ(x_{t-1}|x_t)`로 근사함 ⇒ **forward는 규칙, reverse는 학습 대상**
 
 - **생성** : 순수 노이즈에서 시작해 예측한 노이즈를 조금씩 뺌
     - 한 번에 못 빼니 여러 번 반복 ⇒ 느린 이유
-
-![image_3](./image_set/image_3.png)
-
-- 왼쪽이 순수 노이즈, 오른쪽이 원본 데이터임
-- 빨간 점선이 핵심임 : 진짜 역방향 분포는 알 수 없기 때문에 신경망으로 근사하는 것
-    - 이게 위에서 말한 "reverse는 학습 대상, forward는 정해진 규칙"의 그림 버전임
 
 - 예측 대상이 노이즈만 있는 건 아님 (parameterization)
     - `ε-prediction` : 낀 노이즈를 예측 (가장 일반적)
@@ -98,17 +98,13 @@
     - 학습 = velocity 회귀 (역시 단순 MSE)
 
 - **왜 단순 MSE로 학습이 되는가 (Conditional Flow Matching)**
-    - 진짜 목표인 주변(marginal) 속도장은 계산 불가능함
+    - 먼저 용어 두 개
+        - **조건부 경로** : 노이즈 한 점과 데이터 한 점을 직선으로 이은 것 (위의 선형 보간이 이것)
+        - **주변(marginal) 속도장** : 그런 조건부 경로를 전부 모았을 때 나오는 평균. 샘플링에서 실제로 따라가는 건 이쪽임
+    - 진짜 목표는 주변 속도장인데, 이건 모든 경로를 적분해야 하므로 계산 불가능함
     - 그런데 계산 가능한 **조건부** 속도장으로 회귀해도 gradient가 동일하다는 정리가 있음
-    - 그래서 "노이즈-데이터 쌍 뽑고 → 보간점에서 방향 회귀"라는 단순 루프로 학습됨
+    - 그래서 학습은 직선 하나 위에서만 일어남 ⇒ "노이즈-데이터 쌍 뽑고 → 보간점에서 방향 회귀"라는 단순 루프
     - ⇒ 이게 flow matching 논문의 핵심 기여임
-
-![image_4](./image_set/image_4.png)
-
-- 왼쪽이 노이즈 분포, 오른쪽이 데이터 분포임
-- 진하게 그려진 두 선이 **조건부 경로** ⇒ 노이즈 한 점과 데이터 한 점을 직선으로 이은 것
-    - 학습은 이 직선 위에서만 일어남. 그래서 단순 MSE로 끝남
-- 흐릿하게 깔린 다발은 그런 조건부 경로들을 모아놓은 것이고, 여기서 나오는 평균이 주변 속도장임
 
 - **생성** : 노이즈에서 출발해 예측한 방향으로 몇 걸음 (Euler)
     - 조건부 경로가 직선이라 회귀 대상이 단순함 (diffusion의 곡선 경로 대비)
@@ -138,7 +134,9 @@
     - `v_θ(x_t, t, o)` ⇒ 출력은 **액션 청크** (관절 N개 × H스텝)
     - 이미지 대신 액션 시퀀스를 생성한다는 것만 다르고 구조는 동일함
 
-![image_5](./image_set/image_5.png)
+![image_3](./image_set/image_3.png)
+
+> 출처: Chi et al., [Diffusion Policy: Visuomotor Policy Learning via Action Diffusion](https://arxiv.org/abs/2303.04137) (RSS 2023), Fig. 3
 
 - 왼쪽 아래가 액션 청크의 실체임 : 노이즈 상태에서 시작해 점점 하나의 궤적으로 수렴함
 - 가운데를 보면 관측을 조건으로 받아 여러 스텝의 액션을 **한 번에** 출력함 (prediction horizon)
@@ -153,7 +151,9 @@
     - **SUREFlow** (IROS'26) : Mamba 기반 경량(179M) 백본 + residual flow matching head
     - 제목만 봐도 구조가 파싱됨 : *State-space* (= Mamba 백본) + *Uncertainty-aware* + *REsidual **Flow Matching*** (= action head) ⇒ 백본과 head를 각각 무엇으로 골랐는지가 제목에 그대로 들어있음
 
-![image_6](./image_set/image_6.png)
+![image_4](./image_set/image_4.png)
+
+> 출처: Black et al., [π0: A Vision-Language-Action Flow Model for General Robot Control](https://arxiv.org/abs/2410.24164) (2024)
 
 - π0의 구조도임
     - 왼쪽 파란 블록이 **백본** (VLM), 오른쪽 초록 블록이 **action expert** (= flow matching head)

@@ -1,5 +1,7 @@
 # SSM & Mamba
 
+> 이 장의 그림은 논문 원본이 아니라, 이 문서를 위해 Claude로 생성한 개념도임
+
 ---
 
 - 지금까지의 흐름을 한 줄로 놓으면 이 장이 왜 마지막인지가 보임
@@ -252,7 +254,7 @@
     - **π0** : VLM 백본 + flow matching action head
     - **SUREFlow** (IROS'26) : **Mamba 기반 경량(179M) 백본** + residual flow matching head
 
-    ⇒ 7장 [Generative_Model.md](../7.Generative_Model/Generative_Model.md)의 π0 구조도(image_6)에서
+    ⇒ 7장 [Generative_Model.md](../7.Generative_Model/Generative_Model.md)의 π0 구조도(image_4)에서
     왼쪽 파란 블록(백본)만 Mamba로 갈아끼운 것이 SUREFlow임. head는 건드리지 않음
 
 - 다만 5절의 트레이드오프는 로봇에서도 그대로 적용됨

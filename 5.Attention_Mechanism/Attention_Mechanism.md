@@ -27,6 +27,8 @@ Attention 이전에 **seq2seq**이라는 모델이 존재함.
 
 ![image_1](./image_set/image_1.png)
 
+> 출처: 유원준·안상준, [딥 러닝을 이용한 자연어 처리 입문](https://wikidocs.net/book/2155) — 어텐션 메커니즘
+
 
 
 |벡터|의미|대응되는 상태|
@@ -34,8 +36,6 @@ Attention 이전에 **seq2seq**이라는 모델이 존재함.
 |**Q** (Query)|나는 무엇을 찾는가|t 시점의 디코더 셀에서의 은닉 상태|
 |**K** (Key)|나는 무엇을 갖고 있는가 (검색 대상 역할)|모든 시점의 인코더 셀의 은닉 상태들|
 |**V** (Value)|실제로 가져올 정보|모든 시점의 인코더 셀의 은닉 상태들|
-
-![QKV 구조](image_set/image_1.png)
 
 * **Self-Attention** : Q, K, V가 같은 시퀀스
 * **Cross-Attention** : Q는 A에서, K/V는 B에서
@@ -59,6 +59,8 @@ Attention 이전에 **seq2seq**이라는 모델이 존재함.
 
 ![image_2](./image_set/image_2.png)
 
+> 출처: 유원준·안상준, [딥 러닝을 이용한 자연어 처리 입문](https://wikidocs.net/book/2155) — 어텐션 메커니즘
+
 ### [seq2seq] (원래 있던 것)
 
 * 주황 LSTM (인코더) → 초록 LSTM (디코더)
@@ -78,6 +80,8 @@ Attention 이전에 **seq2seq**이라는 모델이 존재함.
 |`s_t`|디코더 은닉 상태|t = 디코더의 시점 (지금 몇 번째 단어를 뱉는 중인가)|
 
 ![image_3](./image_set/image_3.png)
+
+> 출처: 유원준·안상준, [딥 러닝을 이용한 자연어 처리 입문](https://wikidocs.net/book/2155) — 어텐션 메커니즘
 
 * 위 그림을 보면, 가로 4칸 × 세로 4칸을 입력으로 받았는데 **모든 어텐션 스코어가 스칼라(1×1)** 라는 점
 * 실제 계산 자체도 가로칸과 세로칸을 하나씩 짝지어 곱하고 전부 더함
